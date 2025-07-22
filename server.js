@@ -32,8 +32,6 @@ if (!uri) {
 }
 // Connect to MongoDB with better error handling
 mongoose.connect(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
 })
 .then(() => console.log("MongoDB connected ✅"))
 .catch(err => {
