@@ -15,7 +15,7 @@ import reviewsRouter from "./routes/reviews";
 import downloadsRouter from "./routes/downloads";
 import kDramasRouter from "./routes/kDramas";
 import cDramasRouter from "./routes/cDramas";
-import thaiDramasRouter from "./routes/thaiDrama";
+import thaiDramasRouter from "./routes/thaiDramas.js";
 import japaneseDramasRouter from "./routes/japaneseDramas";
 
 const app = express();
@@ -77,7 +77,7 @@ app.use("/api/reviews", reviewsRouter);
 app.use("/api/downloads", downloadsRouter);
 app.use("/api/kDramas", kDramasRouter);
 app.use("/api/cDramas", cDramasRouter);
-app.use("/api/thaiDrama", thaiDramasRouter);
+app.use("/api/thaiDramas", thaiDramasRouter);
 app.use("/api/japaneseDramas", japaneseDramasRouter);
 
 // Health check endpoint
