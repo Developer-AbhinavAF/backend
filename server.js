@@ -25,7 +25,7 @@ const app = express();
 // server.js - Updated CORS configuration
 const allowedOrigins = [
   'https://multiverse-backend.onrender.com/api/',
-  'http://localhost:3000', // Add your actual frontend URL
+  'https://multiverse-frontend-tau.vercel.app/', // Add your actual frontend URL
 ];
 
 app.use(cors({
