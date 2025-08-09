@@ -4,23 +4,37 @@ import KDrama from "../models/KDrama.js";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
+  const { search = "", page = 1, limit = 100 } = req.query;
+  
+  // Convert to numbers
+  const pageNum = parseInt(page);
+  const limitNum = parseInt(limit);
+  const skip = (pageNum - 1) * limitNum;
+
+  const query = {};
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { tags: { $regex: search, $options: "i" } }
+    ];
+  }
+
   try {
-    const { search = "", page = 1, limit = 100 } = req.query;
-    const skip = (page - 1) * limit;
-    const query = search ? { title: { $regex: search, $options: "i" } } : {};
-    
-    const [results, totalItems] = await Promise.all([
-      ThaiDrama.find(query).skip(skip).limit(parseInt(limit)),
-      ThaiDrama.countDocuments(query)
-    ]);
-    
+    const results = await KDrama.find(query)
+      .skip(skip)
+      .limit(limitNum);
+      
+    const totalItems = await KDrama.countDocuments(query);
+
     res.json({
       results,
       totalItems,
-      totalPages: Math.ceil(totalItems / limit)
+      totalPages: Math.ceil(totalItems / limitNum),
+      currentPage: pageNum
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Database error:", err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 

@@ -15,7 +15,7 @@ import reviewsRouter from "./routes/reviews";
 import downloadsRouter from "./routes/downloads";
 import kDramasRouter from "./routes/kDramas";
 import cDramasRouter from "./routes/cDramas";
-import thaiDramasRouter from "./routes/thaiDramas";
+import thaiDramasRouter from "./routes/thaiDrama";
 import japaneseDramasRouter from "./routes/japaneseDramas";
 
 const app = express();
@@ -29,17 +29,8 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.error(`Blocked by CORS: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true,
-  exposedHeaders: ['Content-Range']  // Important for pagination
+  origin: allowedOrigins,
+  methods: ['GET', 'POST']
 }));
 
 
@@ -68,8 +59,9 @@ mongoose.connection.on('connected', () => console.log('MongoDB connected ✅'));
 mongoose.connection.on('error', err => console.error('MongoDB connection error:', err));
 mongoose.connection.on('disconnected', () => console.log('MongoDB disconnected'));
 // Add request logging middleware
+// Add this before routes
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   next();
 });
 
@@ -85,7 +77,7 @@ app.use("/api/reviews", reviewsRouter);
 app.use("/api/downloads", downloadsRouter);
 app.use("/api/kDramas", kDramasRouter);
 app.use("/api/cDramas", cDramasRouter);
-app.use("/api/thaiDramas", thaiDramasRouter);
+app.use("/api/thaiDrama", thaiDramasRouter);
 app.use("/api/japaneseDramas", japaneseDramasRouter);
 
 // Health check endpoint

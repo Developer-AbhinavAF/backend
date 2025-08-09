@@ -10,8 +10,8 @@ router.get("/", async (req, res) => {
     const query = search ? { title: { $regex: search, $options: "i" } } : {};
     
     const [results, totalItems] = await Promise.all([
-      ThaiDrama.find(query).skip(skip).limit(parseInt(limit)),
-      ThaiDrama.countDocuments(query)
+      CDrama.find(query).skip(skip).limit(parseInt(limit)),
+      CDrama.countDocuments(query)
     ]);
     
     res.json({
