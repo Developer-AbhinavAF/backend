@@ -21,7 +21,12 @@ import japaneseDramasRouter from "./routes/japaneseDramas";
 const app = express();
 
 // Enhanced CORS configuration
-app.use(cors());
+// server.js
+const corsOptions = {
+  origin: "https://multiverse-frontend-tau.vercel.app/", // Replace with your actual frontend URL
+  optionsSuccessStatus: 200
+}
+app.use(cors(corsOptions));
 
 
 app.use(express.json());
