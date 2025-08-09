@@ -14,28 +14,18 @@ const models = {
 };
 
 // POST track download
+// downloads.js
 router.post('/:collection/:slug', async (req, res) => {
-  const { collection, slug } = req.params;
-  const { quality } = req.body;
-
-  if (!models[collection]) {
-    return res.status(400).json({ message: 'Invalid collection' });
-  }
-
   try {
-    const media = await models[collection].findOne({ slug });
-    if (!media) {
-      return res.status(404).json({ message: 'Media not found' });
+    // Initialize downloads if missing
+    if (typeof media.downloads === 'undefined') {
+      media.downloads = 0;
     }
-
-    media.downloads += 1;
-    const updatedMedia = await media.save();
     
-    res.json({ 
-      downloads: updatedMedia.downloads,
-      mediaId: updatedMedia._id,
-      slug: updatedMedia.slug
-    });
+    media.downloads += 1;
+    await media.save();
+    
+    res.json({ downloads: media.downloads });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

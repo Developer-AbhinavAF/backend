@@ -14,34 +14,22 @@ const models = {
 };
 
 // POST update like status
+// likes.js
 router.post('/', async (req, res) => {
-  const { mediaId, slug, type, liked } = req.body;
-  
-  if (!models[type]) {
-    return res.status(400).json({ message: 'Invalid media type' });
-  }
-
   try {
-    const media = await models[type].findOne({ 
-      $or: [{ _id: mediaId }, { slug: slug }] 
-    });
-    
-    if (!media) {
-      return res.status(404).json({ message: 'Media not found' });
+    // Initialize likes if missing
+    if (typeof media.likes === 'undefined') {
+      media.likes = 0;
     }
-
+    
     if (liked) {
       media.likes += 1;
     } else if (media.likes > 0) {
       media.likes -= 1;
     }
 
-    const updatedMedia = await media.save();
-    res.json({ 
-      likes: updatedMedia.likes,
-      mediaId: updatedMedia._id,
-      slug: updatedMedia.slug
-    });
+    await media.save();
+    res.json({ likes: media.likes });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

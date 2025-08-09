@@ -6,19 +6,24 @@ const reviewSchema = new mongoose.Schema({
   comment: String,
   createdAt: { type: Date, default: Date.now }
 });
+// ThaiDrama.js, KDrama.js, etc.
 const dramaSchema = new mongoose.Schema({
-  title: String,
-  slug: String,
-  type: String,
-  thumbnail: String,
+  // Add these required fields
+  title: { type: String, required: true },
+  slug: { type: String, required: true, unique: true },
+  type: { type: String, default: "thaiDrama" },
   description: String,
+  thumbnail: String,
   rating: Number,
-  releaseDate: Date,
   tags: [String],
-  qualities: mongoose.Schema.Types.Mixed,
-  seasons: mongoose.Schema.Types.Mixed,
-  likes: Number,
-  reviews: [reviewSchema]
+  releaseDate: Date,
+  qualities: {
+    "480p": qualitySchema,
+    "720p": qualitySchema,
+    "1080p": qualitySchema
+  },
+  seasons: [seasonSchema], // Add season structure
+  downloadable: Boolean
 }, { timestamps: true });
 
 export default mongoose.model("JapaneseDrama", dramaSchema);

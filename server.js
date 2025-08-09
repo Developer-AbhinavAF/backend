@@ -22,11 +22,25 @@ const app = express();
 
 // Enhanced CORS configuration
 // server.js
-const corsOptions = {
-  origin: "https://multiverse-frontend-tau.vercel.app/", // Replace with your actual frontend URL
-  optionsSuccessStatus: 200
-}
-app.use(cors(corsOptions));
+// server.js - Updated CORS configuration
+const allowedOrigins = [
+  'https://https://multiverse-frontend-tau.vercel.app/',
+  'http://localhost:5173', // Add your actual frontend URL
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.error(`Blocked by CORS: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+  exposedHeaders: ['Content-Range']  // Important for pagination
+}));
 
 
 app.use(express.json());
@@ -39,13 +53,20 @@ if (!uri) {
   process.exit(1);
 }
 // Connect to MongoDB with better error handling
-mongoose.connect(uri)
-.then(() => console.log("MongoDB connected ✅"))
-.catch(err => {
-  console.error("MongoDB connection error:", err);
-  process.exit(1);
+// server.js
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+  retryWrites: true,
+  w: 'majority'
 });
 
+mongoose.connection.on('connecting', () => console.log('Connecting to MongoDB...'));
+mongoose.connection.on('connected', () => console.log('MongoDB connected ✅'));
+mongoose.connection.on('error', err => console.error('MongoDB connection error:', err));
+mongoose.connection.on('disconnected', () => console.log('MongoDB disconnected'));
 // Add request logging middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
@@ -82,9 +103,17 @@ app.use((req, res) => {
 });
 
 // Error handler
+// server.js
 app.use((err, req, res, next) => {
-  console.error("Server error:", err);
-  res.status(500).json({ error: "Internal server error" });
+  console.error(`[${new Date().toISOString()}] ${req.method} ${req.url}`, err);
+  
+  // Standard error response
+  res.status(err.status || 500).json({
+    error: {
+      message: err.message,
+      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    }
+  });
 });
 
 const PORT = 5000;
