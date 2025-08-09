@@ -1,6 +1,6 @@
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const Update = require('../models/Update');
+import Update from "../models/Update.js";
 
 // GET all updates
 router.get('/', async (req, res) => {

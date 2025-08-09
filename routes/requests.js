@@ -1,6 +1,6 @@
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const Request = require('../models/Request');
+import Request from "../models/Request.js";
 
 // POST create a request
 router.post('/', async (req, res) => {

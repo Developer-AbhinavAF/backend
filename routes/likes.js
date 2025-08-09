@@ -1,17 +1,10 @@
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const mongoose = require('mongoose');
-
-const models = {
-  movies: mongoose.model('Movie'),
-  animeMovie: mongoose.model('AnimeMovie'),
-  animeSeries: mongoose.model('AnimeSeries'),
-  webSeries: mongoose.model('WebSeries'),
-  kDramas: mongoose.model('KDrama'),
-  cDramas: mongoose.model('CDrama'),
-  thaiDramas: mongoose.model('ThaiDrama'),
-  japaneseDramas: mongoose.model('JapaneseDrama')
-};
+import mongoose from "mongoose";
+import KDrama from "../models/KDrama.js";
+import CDrama from "../models/CDrama.js";
+import JapaneseDrama from "../models/JapaneseDrama.js";
+import ThaiDrama from "../models/ThaiDrama.js";
 
 // POST update like status
 // likes.js

@@ -8,15 +8,15 @@ import movieRoutes from "./routes/movieRoutes.js";
 import animeMovieRoutes from "./routes/animeMovieRoutes.js";
 import animeSeriesRoutes from "./routes/animeSeriesRoutes.js";
 import webSeriesRoutes from "./routes/webSeriesRoutes.js";
-import updatesRouter from "./routes/updates";
-import requestsRouter from "./routes/requests";
-import likesRouter from "./routes/likes";
-import reviewsRouter from "./routes/reviews";
-import downloadsRouter from "./routes/downloads";
-import kDramasRouter from "./routes/kDramas";
-import cDramasRouter from "./routes/cDramas";
+import updatesRouter from "./routes/updates.js";
+import requestsRouter from "./routes/requests.js";
+import likesRouter from "./routes/likes.js";
+import reviewsRouter from "./routes/reviews.js";
+import downloadsRouter from "./routes/downloads.js";
+import kDramasRouter from "./routes/kDramas.js";
+import cDramasRouter from "./routes/cDramas.js";
 import thaiDramasRouter from "./routes/thaiDramas.js";
-import japaneseDramasRouter from "./routes/japaneseDramas";
+import japaneseDramasRouter from "./routes/japaneseDramas.js";
 
 const app = express();
 
@@ -24,8 +24,8 @@ const app = express();
 // server.js
 // server.js - Updated CORS configuration
 const allowedOrigins = [
-  'https://https://multiverse-frontend-tau.vercel.app/',
-  'http://localhost:5173', // Add your actual frontend URL
+  'https://multiverse-backend.onrender.com/api/',
+  'http://localhost:3000', // Add your actual frontend URL
 ];
 
 app.use(cors({

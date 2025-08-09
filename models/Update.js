@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const mediaItemSchema = new mongoose.Schema({
   title: String,
@@ -15,4 +15,4 @@ const updateSchema = new mongoose.Schema({
   mediaItems: [mediaItemSchema]
 });
 
-module.exports = mongoose.model('Update', updateSchema);
+export default mongoose.model('Update', updateSchema);
