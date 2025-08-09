@@ -5,15 +5,18 @@ import dotenv from "dotenv"
 
 // Import all routes
 import movieRoutes from "./routes/movieRoutes.js";
-import pcGamesRoutes from "./routes/pcGamesRoutes.js";
-import pcAppsRoutes from "./routes/pcAppsRoutes.js";
 import animeMovieRoutes from "./routes/animeMovieRoutes.js";
 import animeSeriesRoutes from "./routes/animeSeriesRoutes.js";
-import iosGamesRoutes from "./routes/iosGamesRoutes.js";
-import androidAppsRoutes from "./routes/androidAppsRoutes.js";
 import webSeriesRoutes from "./routes/webSeriesRoutes.js";
-import modApksRoutes from "./routes/modApksRoutes.js";
-import androidGamesRoutes from "./routes/androidGamesRoutes.js";
+import updatesRouter from "./routes/updates";
+import requestsRouter from "./routes/requests";
+import likesRouter from "./routes/likes";
+import reviewsRouter from "./routes/reviews";
+import downloadsRouter from "./routes/downloads";
+import kDramasRouter from "./routes/kDramas";
+import cDramasRouter from "./routes/cDramas";
+import thaiDramasRouter from "./routes/thaiDramas";
+import japaneseDramasRouter from "./routes/japaneseDramas";
 
 const app = express();
 
@@ -46,15 +49,18 @@ app.use((req, res, next) => {
 
 // Routes
 app.use("/api/movies", movieRoutes);
-app.use("/api/pcGames", pcGamesRoutes);
-app.use("/api/pcApps", pcAppsRoutes);
 app.use("/api/animeMovie", animeMovieRoutes);
 app.use("/api/animeSeries", animeSeriesRoutes);
-app.use("/api/iosGames", iosGamesRoutes);
-app.use("/api/androidApps", androidAppsRoutes);
 app.use("/api/webSeries", webSeriesRoutes);
-app.use("/api/modApks", modApksRoutes);
-app.use("/api/androidGames", androidGamesRoutes);
+app.use("/api/updates", updatesRouter);
+app.use("/api/requests", requestsRouter);
+app.use("/api/likes", likesRouter);
+app.use("/api/reviews", reviewsRouter);
+app.use("/api/downloads", downloadsRouter);
+app.use("/api/kDramas", kDramasRouter);
+app.use("/api/cDramas", cDramasRouter);
+app.use("/api/thaiDramas", thaiDramasRouter);
+app.use("/api/japaneseDramas", japaneseDramasRouter);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
