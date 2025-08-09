@@ -1,56 +1,24 @@
-const mongoose = require('mongoose');
-
-const episodeSchema = new mongoose.Schema({
-  episodeNumber: Number,
-  title: String,
-  description: String,
-  duration: String,
-  thumbnail: String,
-  downloadQualities: {
-    "480p": { downloadUrl: String, fileSize: String },
-    "720p": { downloadUrl: String, fileSize: String },
-    "1080p": { downloadUrl: String, fileSize: String }
-  },
-  streamQualities: {
-    "480p": { 
-      englishUrl: String,
-    },
-    "720p": { 
-      englishUrl: String,
-    },
-    "1080p": { 
-      englishUrl: String,
-    }
-  }
-});
-
-const seasonSchema = new mongoose.Schema({
-  seasonNumber: Number,
-  episodes: [episodeSchema]
-});
-
-const japaneseDramaSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  slug: { type: String, required: true, unique: true },
-  description: String,
-  thumbnail: String,
-  genres: [String],
-  releaseDate: Date,
+import mongoose from "mongoose";
+const reviewSchema = new mongoose.Schema({
+  userName: String,
+  userEmail: String,
   rating: Number,
-  type: { type: String, default: 'japaneseDrama' },
-  seasons: [seasonSchema],
-  tags: [String],
-  likes: { type: Number, default: 0 },
-  reviews: [{
-    userName: String,
-    userEmail: String,
-    rating: Number,
-    comment: String,
-    createdAt: { type: Date, default: Date.now }
-  }],
-  downloads: { type: Number, default: 0 },
-  views: { type: Number, default: 0 }
+  comment: String,
+  createdAt: { type: Date, default: Date.now }
 });
+const dramaSchema = new mongoose.Schema({
+  title: String,
+  slug: String,
+  type: String,
+  thumbnail: String,
+  description: String,
+  rating: Number,
+  releaseDate: Date,
+  tags: [String],
+  qualities: mongoose.Schema.Types.Mixed,
+  seasons: mongoose.Schema.Types.Mixed,
+  likes: Number,
+  reviews: [reviewSchema]
+}, { timestamps: true });
 
-kDramaSchema.index({ title: 'text', description: 'text' });
-module.exports = mongoose.model('JapaneseDrama', japaneseDramaSchema);
+export default mongoose.model("JapaneseDrama", dramaSchema);

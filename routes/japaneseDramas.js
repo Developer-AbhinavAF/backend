@@ -1,41 +1,19 @@
-const express = require('express');
+import express from "express";
+import JapaneseDrama from "../models/JapaneseDrama.js";
+
 const router = express.Router();
-const JapaneseDrama = require('../models/JapaneseDrama');
 
-// GET all Japanese dramas with pagination
-router.get('/', async (req, res) => {
-  const { search } = req.query;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const query = search ? { $text: { $search: search } } : {};
-
+router.get("/", async (req, res) => {
   try {
-    const japaneseDramas = await JapaneseDrama.find(query)
-      .limit(limit)
+    const { search = "", page = 1, limit = 100 } = req.query;
+    const query = search ? { title: { $regex: search, $options: "i" } } : {};
+    const data = await JapaneseDrama.find(query)
       .skip((page - 1) * limit)
-      .exec();
-
-    const count = await JapaneseDrama.countDocuments(query);
-
-    res.json({
-      japaneseDramas,
-      totalPages: Math.ceil(count / limit),
-      currentPage: page
-    });
+      .limit(parseInt(limit));
+    res.json({ results: data });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
-// GET single Japanese drama by slug
-router.get('/:slug', async (req, res) => {
-  try {
-    const japaneseDrama = await JapaneseDrama.findOne({ slug: req.params.slug });
-    if (!japaneseDrama) return res.status(404).json({ message: 'Japanese drama not found' });
-    res.json(japaneseDrama);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-module.exports = router;
+export default router;
