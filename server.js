@@ -13,10 +13,18 @@ import requestsRouter from "./routes/requests.js";
 import likesRouter from "./routes/likes.js";
 import reviewsRouter from "./routes/reviews.js";
 import downloadsRouter from "./routes/downloads.js";
+// Import routes
 import kDramasRouter from "./routes/kDramas.js";
 import cDramasRouter from "./routes/cDramas.js";
-import thaiDramasRouter from "./routes/thaiDramas.js";
+import thaiDramasRouter from "./routes/thaiDramas.js"; // Note: filename must match
 import japaneseDramasRouter from "./routes/japaneseDramas.js";
+
+// Mount routes (add these ABOVE the 404 handler)
+app.use("/api/kDramas", kDramasRouter);
+app.use("/api/cDramas", cDramasRouter);
+app.use("/api/thaiDramas", thaiDramasRouter);
+app.use("/api/japaneseDramas", japaneseDramasRouter);
+
 
 const app = express();
 
