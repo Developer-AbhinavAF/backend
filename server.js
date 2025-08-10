@@ -8,7 +8,7 @@ import animeMovieRoutes from "./routes/animeMovieRoutes.js";
 import animeSeriesRoutes from "./routes/animeSeriesRoutes.js";
 import webSeriesRoutes from "./routes/webSeriesRoutes.js";
 import kDramasRoutes from "./routes/kDramas.js";
-import cDramasRoutes from "./routes/Dramas.js";
+import cDramasRoutes from "./routes/cDramas.js";
 import thaiDramasRoutes from "./routes/thaiDramas.js";
 import japaneseDramasRoutes from "./routes/japaneseDramas.js";
 import likesRoutes from "./routes/likes.js";
