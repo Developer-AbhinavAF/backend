@@ -1,98 +1,77 @@
+// server.js
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// Import all routes
-import movieRoutes from "./routes/movieRoutes.js";
-import animeMovieRoutes from "./routes/animeMovieRoutes.js";
-import animeSeriesRoutes from "./routes/animeSeriesRoutes.js";
-import webSeriesRoutes from "./routes/webSeriesRoutes.js";
-import updatesRouter from "./routes/updates.js";
-import requestsRouter from "./routes/requests.js";
-import likesRouter from "./routes/likes.js";
-import reviewsRouter from "./routes/reviews.js";
-import downloadsRouter from "./routes/downloads.js";
-// ... existing imports ...
+dotenv.config();
 
-// Corrected import paths (case-sensitive)
-import kDramasRouter from "./routes/kDramas.js";
-import cDramasRouter from "./routes/cDramas.js";
-import thaiDramasRouter from "./routes/thaiDramas.js";
-import japaneseDramasRouter from "./routes/japaneseDramas.js";
-// ... express setup ...
-
-// Register all routes
-app.use("/api/movies", movieRoutes);
-app.use("/api/animeMovie", animeMovieRoutes);
-app.use("/api/animeSeries", animeSeriesRoutes);
-app.use("/api/webSeries", webSeriesRoutes);
-app.use("/api/updates", updatesRouter);
-app.use("/api/requests", requestsRouter);
-app.use("/api/likes", likesRouter);  // Fixed registration
-app.use("/api/reviews", reviewsRouter);
-app.use("/api/downloads", downloadsRouter);
-
-// Add these routes:
-app.use("/api/kDramas", kDramasRouter);
-app.use("/api/cDramas", cDramasRouter);
-app.use("/api/thaiDramas", thaiDramasRouter);
-app.use("/api/japaneseDramas", japaneseDramasRouter);
-
-// ... rest of server.js ...
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
+app.use(express.json());
 
-// Enhanced CORS configuration
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://multiverse-frontend-tau.vercel.app'
-];
+// CORS - read from env or fallback
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:3000,https://multiverse-frontend-tau.vercel.app")
+  .split(",")
+  .map(s => s.trim());
 
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error("Not allowed by CORS"));
   },
-  methods: ['GET', 'POST'],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
 
-app.use(express.json());
-dotenv.config();
-
-const uri = process.env.MONGO_URI;
-
-if (!uri) {
-  console.error("❌ MONGO_URI is not defined in environment variables.");
-  process.exit(1);
-}
-
-// Connect to MongoDB with better error handling
-mongoose.connect(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000
-})
-.then(() => console.log("MongoDB connected ✅"))
-.catch(err => {
-  console.error("MongoDB connection error:", err);
-  process.exit(1);
-});
-
-// Add request logging middleware
+// Logger
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
-// Routes
+// DB connect (non-fatal if missing)
+const uri = process.env.MONGO_URI;
+if (uri) {
+  // Pehle ye hoga
+  mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 
-// Health check endpoint
+  // Ab bas simple likho
+  mongoose.connect(uri)
+    .then(() => console.log("MongoDB connected ✅"))
+    .catch(err => console.error(err));
+
+} else {
+  console.warn("⚠️  MONGO_URI not provided. Starting without DB (dev mode).");
+}
+
+// Import routers AFTER express app created
+import moviesRouter from "./routes/movieRoutes.js";
+import animeMovieRouter from "./routes/animeMovieRoutes.js";
+import animeSeriesRouter from "./routes/animeSeriesRoutes.js";
+import webSeriesRouter from "./routes/webSeriesRoutes.js";
+import kDramasRouter from "./routes/kDramas.js";
+import cDramasRouter from "./routes/cDramas.js";
+import thaiDramasRouter from "./routes/thaiDramas.js";
+import japaneseDramasRouter from "./routes/japaneseDramas.js";
+
+app.use("/api/movies", moviesRouter);
+app.use("/api/animeMovie", animeMovieRouter);
+app.use("/api/animeSeries", animeSeriesRouter);
+app.use("/api/webSeries", webSeriesRouter);
+app.use("/api/kDramas", kDramasRouter);
+app.use("/api/cDramas", cDramasRouter);
+app.use("/api/thaiDramas", thaiDramasRouter);
+app.use("/api/japaneseDramas", japaneseDramasRouter);
+
+// health
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
@@ -101,27 +80,14 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: "Endpoint not found" });
-});
+// 404
+app.use((req, res) => res.status(404).json({ error: "Endpoint not found" }));
 
-// Error handler
+// error handler
 app.use((err, req, res, next) => {
   console.error("Server error:", err);
   res.status(500).json({ error: "Internal server error" });
 });
 
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port http://localhost:${PORT}`);
-});
-
-// Handle shutdown gracefully
-process.on("SIGINT", () => {
-  console.log("Shutting down server...");
-  server.close(() => {
-    console.log("Server closed");
-    process.exit(0);
-  });
-});
+app.listen(PORT, "0.0.0.0", () => console.log(`Server listening on port ${PORT}`));
