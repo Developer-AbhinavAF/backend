@@ -26,7 +26,8 @@ const animeMovieSchema = new mongoose.Schema({
     "480p": qualitySchema,
     "720p": qualitySchema,
     "1080p": qualitySchema
-  }
+  },
+  downloadCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 export default mongoose.model("AnimeMovie", animeMovieSchema);

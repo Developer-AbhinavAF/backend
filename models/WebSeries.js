@@ -41,7 +41,8 @@ const webSeriesSchema = new mongoose.Schema({
   director: String,
   totalEpisodes: Number,
   seasons: [seasonSchema],
-  downloadable: Boolean
+  downloadable: Boolean,
+  downloadCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 export default mongoose.model("WebSeries", webSeriesSchema);

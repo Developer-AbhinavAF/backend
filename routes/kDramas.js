@@ -28,7 +28,18 @@ router.get("/", async (req, res) => {
     });
   } catch (err) {
     console.error("Fetch Error:", err);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.get("/:slug", async (req, res) => {
+  try {
+    const drama = await KDrama.findOne({ slug: req.params.slug });
+    if (!drama) return res.status(404).json({ message: "Drama Not Found" });
+    res.json(drama);
+  } catch (err) {
+    console.error("Error fetching drama:", err);
+    res.status(500).json({ message: "Server Error" });
   }
 });
 

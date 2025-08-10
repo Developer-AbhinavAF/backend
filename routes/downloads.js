@@ -13,18 +13,26 @@ const models = {
   japaneseDramas: mongoose.model('JapaneseDrama')
 };
 
-// POST track download
-// downloads.js
 router.post('/:collection/:slug', async (req, res) => {
+  const { collection, slug } = req.params;
+
+  if (!models[collection]) {
+    return res.status(400).json({ message: 'Invalid collection' });
+  }
+
   try {
-    // Initialize downloads if missing
+    const media = await models[collection].findOne({ slug });
+    if (!media) {
+      return res.status(404).json({ message: 'Media not found' });
+    }
+
     if (typeof media.downloads === 'undefined') {
       media.downloads = 0;
     }
-    
+
     media.downloads += 1;
     await media.save();
-    
+
     res.json({ downloads: media.downloads });
   } catch (err) {
     res.status(500).json({ message: err.message });

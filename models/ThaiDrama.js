@@ -52,7 +52,8 @@ const dramaSchema = new mongoose.Schema({
   seasons: [seasonSchema],
   likes: { type: Number, default: 0 },
   reviews: [reviewSchema],
-  downloadable: Boolean
+  downloadable: Boolean,
+  downloadCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 // Export for each file:

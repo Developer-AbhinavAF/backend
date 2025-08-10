@@ -42,7 +42,8 @@ const animeSeriesSchema = new mongoose.Schema({
   totalEpisodes: Number,
   studio: String,
   seasons: [seasonSchema],
-  downloadable: Boolean
+  downloadable: Boolean,
+  downloadCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 export default mongoose.model("AnimeSeries", animeSeriesSchema);

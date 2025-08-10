@@ -1,20 +1,35 @@
 import express from "express";
 const router = express.Router();
-import mongoose from "mongoose";
 import KDrama from "../models/KDrama.js";
 import CDrama from "../models/CDrama.js";
 import JapaneseDrama from "../models/JapaneseDrama.js";
 import ThaiDrama from "../models/ThaiDrama.js";
 
-// POST update like status
-// likes.js
-router.post('/', async (req, res) => {
+const models = {
+  kDramas: KDrama,
+  cDramas: CDrama,
+  thaiDramas: ThaiDrama,
+  japaneseDramas: JapaneseDrama
+};
+
+router.post('/:collection/:slug', async (req, res) => {
+  const { collection, slug } = req.params;
+  const { liked } = req.body;
+
+  if (!models[collection]) {
+    return res.status(400).json({ message: 'Invalid collection' });
+  }
+
   try {
-    // Initialize likes if missing
+    const media = await models[collection].findOne({ slug });
+    if (!media) {
+      return res.status(404).json({ message: 'Media not found' });
+    }
+
     if (typeof media.likes === 'undefined') {
       media.likes = 0;
     }
-    
+
     if (liked) {
       media.likes += 1;
     } else if (media.likes > 0) {
