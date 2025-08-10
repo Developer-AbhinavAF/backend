@@ -4,11 +4,18 @@ import JapaneseDrama from "../models/JapaneseDrama.js";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
+  const { search = "", page = 1, limit = 100 } = req.query;
+  const skip = (page - 1) * limit;
+  
+  const query = {};
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { tags: { $regex: search, $options: "i" } }
+    ];
+  }
+
   try {
-    const { search = "", page = 1, limit = 100 } = req.query;
-    const skip = (page - 1) * limit;
-    const query = search ? { title: { $regex: search, $options: "i" } } : {};
-    
     const [results, totalItems] = await Promise.all([
       JapaneseDrama.find(query).skip(skip).limit(parseInt(limit)),
       JapaneseDrama.countDocuments(query)
@@ -20,7 +27,8 @@ router.get("/", async (req, res) => {
       totalPages: Math.ceil(totalItems / limit)
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Fetch Error:", err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 

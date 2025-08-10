@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 
 // Import all routes
 import movieRoutes from "./routes/movieRoutes.js";
@@ -13,37 +13,33 @@ import requestsRouter from "./routes/requests.js";
 import likesRouter from "./routes/likes.js";
 import reviewsRouter from "./routes/reviews.js";
 import downloadsRouter from "./routes/downloads.js";
-// Import routes
 import kDramasRouter from "./routes/kDramas.js";
 import cDramasRouter from "./routes/cDramas.js";
-import thaiDramasRouter from "./routes/thaiDramas.js"; // Note: filename must match
+import thaiDramasRouter from "./routes/thaiDramas.js";
 import japaneseDramasRouter from "./routes/japaneseDramas.js";
-
-// Mount routes (add these ABOVE the 404 handler)
-app.use("/api/kDramas", kDramasRouter);
-app.use("/api/cDramas", cDramasRouter);
-app.use("/api/thaiDramas", thaiDramasRouter);
-app.use("/api/japaneseDramas", japaneseDramasRouter);
-
 
 const app = express();
 
 // Enhanced CORS configuration
-// server.js
-// server.js - Updated CORS configuration
 const allowedOrigins = [
-  'https://multiverse-backend.onrender.com/api/',
-  'https://multiverse-frontend-tau.vercel.app/', // Add your actual frontend URL
+  'http://localhost:3000',
+  'https://multiverse-frontend-tau.vercel.app'
 ];
 
 app.use(cors({
-  origin: allowedOrigins,
-  methods: ['GET', 'POST']
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST'],
+  credentials: true
 }));
 
-
 app.use(express.json());
-dotenv.config(); // Make sure to call this at the top
+dotenv.config();
 
 const uri = process.env.MONGO_URI;
 
@@ -51,25 +47,23 @@ if (!uri) {
   console.error("❌ MONGO_URI is not defined in environment variables.");
   process.exit(1);
 }
+
 // Connect to MongoDB with better error handling
-// server.js
 mongoose.connect(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-  retryWrites: true,
-  w: 'majority'
+  socketTimeoutMS: 45000
+})
+.then(() => console.log("MongoDB connected ✅"))
+.catch(err => {
+  console.error("MongoDB connection error:", err);
+  process.exit(1);
 });
 
-mongoose.connection.on('connecting', () => console.log('Connecting to MongoDB...'));
-mongoose.connection.on('connected', () => console.log('MongoDB connected ✅'));
-mongoose.connection.on('error', err => console.error('MongoDB connection error:', err));
-mongoose.connection.on('disconnected', () => console.log('MongoDB disconnected'));
 // Add request logging middleware
-// Add this before routes
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
@@ -103,20 +97,12 @@ app.use((req, res) => {
 });
 
 // Error handler
-// server.js
 app.use((err, req, res, next) => {
-  console.error(`[${new Date().toISOString()}] ${req.method} ${req.url}`, err);
-  
-  // Standard error response
-  res.status(err.status || 500).json({
-    error: {
-      message: err.message,
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-    }
-  });
+  console.error("Server error:", err);
+  res.status(500).json({ error: "Internal server error" });
 });
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port http://localhost:${PORT}`);
 });

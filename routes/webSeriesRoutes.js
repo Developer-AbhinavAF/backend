@@ -4,18 +4,23 @@ import WebSeries from "../models/WebSeries.js";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const { search } = req.query;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 20;
+  const { search = "", page = 1, limit = 100 } = req.query;
   const skip = (page - 1) * limit;
-
+  
   const query = {};
-  if (search) query.title = { $regex: search, $options: "i" };
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { tags: { $regex: search, $options: "i" } }
+    ];
+  }
 
   try {
-    const results = await WebSeries.find(query).skip(skip).limit(limit);
-    const totalItems = await WebSeries.countDocuments(query);
-
+    const [results, totalItems] = await Promise.all([
+      WebSeries.find(query).skip(skip).limit(parseInt(limit)),
+      WebSeries.countDocuments(query)
+    ]);
+    
     res.json({
       results,
       totalItems,

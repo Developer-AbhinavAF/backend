@@ -4,6 +4,7 @@ const qualitySchema = new mongoose.Schema({
   downloadUrl: String,
   fileSize: String,
   englishUrl: String,
+  hindiUrl: String
 }, { _id: false });
 
 const episodeSchema = new mongoose.Schema({
@@ -27,21 +28,27 @@ const seasonSchema = new mongoose.Schema({
   episodes: [episodeSchema]
 }, { _id: false });
 
-const KDramaSchema = new mongoose.Schema({
+const reviewSchema = new mongoose.Schema({
+  userName: String,
+  userEmail: String,
+  rating: Number,
+  comment: String,
+  createdAt: { type: Date, default: Date.now }
+});
+
+const dramaSchema = new mongoose.Schema({
   title: { type: String, required: true },
   slug: { type: String, required: true, unique: true },
-  type: { type: String, default: "KDrama" },
-  description: String,
+  type: { type: String, default: "kDrama" },
   thumbnail: String,
-  poster: String,
+  description: String,
   rating: Number,
+  releaseDate: Date,
   tags: [String],
-  releaseDate: String,
-  status: String,
-  totalEpisodes: Number,
-  studio: String,
   seasons: [seasonSchema],
+  likes: { type: Number, default: 0 },
+  reviews: [reviewSchema],
   downloadable: Boolean
 }, { timestamps: true });
 
-export default mongoose.model("KDrama", KDramaSchema);
+export default mongoose.model("KDrama", dramaSchema);

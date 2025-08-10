@@ -4,18 +4,23 @@ import KDrama from "../models/KDrama.js";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const { search } = req.query;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 20;
+  const { search = "", page = 1, limit = 100 } = req.query;
   const skip = (page - 1) * limit;
-
+  
   const query = {};
-  if (search) query.title = { $regex: search, $options: "i" };
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { tags: { $regex: search, $options: "i" } }
+    ];
+  }
 
   try {
-    const results = await KDrama.find(query).skip(skip).limit(limit);
-    const totalItems = await KDrama.countDocuments(query);
-
+    const [results, totalItems] = await Promise.all([
+      KDrama.find(query).skip(skip).limit(parseInt(limit)),
+      KDrama.countDocuments(query)
+    ]);
+    
     res.json({
       results,
       totalItems,
@@ -23,18 +28,7 @@ router.get("/", async (req, res) => {
     });
   } catch (err) {
     console.error("Fetch Error:", err);
-    res.status(500).json({ message: "Server Error" });
-  }
-});
-
-router.get("/:slug", async (req, res) => {
-  try {
-    const series = await KDrama.findOne({ slug: req.params.slug });
-    if (!series) return res.status(404).json({ message: "Series Not Found" });
-    res.json(series);
-  } catch (err) {
-    console.error("Error fetching series:", err);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ error: "Server error" });
   }
 });
 

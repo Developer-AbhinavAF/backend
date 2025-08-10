@@ -1,16 +1,13 @@
+// CDrama.js, ThaiDrama.js, JapaneseDrama.js
+// (Same structure as KDrama.js, only change model name and default type)
+
 import mongoose from "mongoose";
-const reviewSchema = new mongoose.Schema({
-  userName: String,
-  userEmail: String,
-  rating: Number,
-  comment: String,
-  createdAt: { type: Date, default: Date.now }
-});
 
 const qualitySchema = new mongoose.Schema({
   downloadUrl: String,
   fileSize: String,
   englishUrl: String,
+  hindiUrl: String
 }, { _id: false });
 
 const episodeSchema = new mongoose.Schema({
@@ -34,25 +31,31 @@ const seasonSchema = new mongoose.Schema({
   episodes: [episodeSchema]
 }, { _id: false });
 
+const reviewSchema = new mongoose.Schema({
+  userName: String,
+  userEmail: String,
+  rating: Number,
+  comment: String,
+  createdAt: { type: Date, default: Date.now }
+});
 
-// ThaiDrama.js, KDrama.js, etc.
+// For CDrama.js
 const dramaSchema = new mongoose.Schema({
-  // Add these required fields
   title: { type: String, required: true },
   slug: { type: String, required: true, unique: true },
-  type: { type: String, default: "thaiDrama" },
-  description: String,
+  type: { type: String, default: "japaneseDrama" },
   thumbnail: String,
+  description: String,
   rating: Number,
-  tags: [String],
   releaseDate: Date,
-  qualities: {
-    "480p": qualitySchema,
-    "720p": qualitySchema,
-    "1080p": qualitySchema
-  },
-  seasons: [seasonSchema], // Add season structure
+  tags: [String],
+  seasons: [seasonSchema],
+  likes: { type: Number, default: 0 },
+  reviews: [reviewSchema],
   downloadable: Boolean
 }, { timestamps: true });
 
+// Export for each file:
+// CDrama.js: export default mongoose.model("CDrama", dramaSchema);
+// ThaiDrama.js: export default mongoose.model("ThaiDrama", dramaSchema);
 export default mongoose.model("JapaneseDrama", dramaSchema);
