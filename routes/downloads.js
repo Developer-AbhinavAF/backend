@@ -15,6 +15,7 @@ const models = {
 };
 
 // POST track download
+// Update the POST handler:
 router.post('/:collection/:slug', async (req, res) => {
   const { collection, slug } = req.params;
   

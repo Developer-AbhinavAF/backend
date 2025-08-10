@@ -15,6 +15,7 @@ const models = {
 };
 
 // POST update like status
+// Update the POST handler:
 router.post('/:collection/:slug', async (req, res) => {
   const { collection, slug } = req.params;
   const { liked } = req.body;

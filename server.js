@@ -20,7 +20,6 @@ import kDramasRouter from "./routes/kDramas.js";
 import cDramasRouter from "./routes/cDramas.js";
 import thaiDramasRouter from "./routes/thaiDramas.js";
 import japaneseDramasRouter from "./routes/japaneseDramas.js";
-
 // ... express setup ...
 
 // Register all routes
@@ -33,6 +32,8 @@ app.use("/api/requests", requestsRouter);
 app.use("/api/likes", likesRouter);  // Fixed registration
 app.use("/api/reviews", reviewsRouter);
 app.use("/api/downloads", downloadsRouter);
+
+// Add these routes:
 app.use("/api/kDramas", kDramasRouter);
 app.use("/api/cDramas", cDramasRouter);
 app.use("/api/thaiDramas", thaiDramasRouter);
