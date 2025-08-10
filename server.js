@@ -26,7 +26,9 @@ app.use("/api/movies", movieRoutes);
 app.use("/api/animeMovie", animeMovieRoutes);
 app.use("/api/animeSeries", animeSeriesRoutes);
 app.use("/api/webSeries", webSeriesRoutes);
+console.log("✅ kDramas route loaded");
 app.use("/api/kDramas", kDramasRoutes);
+
 app.use("/api/cDramas", cDramasRoutes);
 app.use("/api/thaiDramas", thaiDramasRoutes);
 app.use("/api/japaneseDramas", japaneseDramasRoutes);
