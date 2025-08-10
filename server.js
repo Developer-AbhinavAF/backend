@@ -13,10 +13,32 @@ import requestsRouter from "./routes/requests.js";
 import likesRouter from "./routes/likes.js";
 import reviewsRouter from "./routes/reviews.js";
 import downloadsRouter from "./routes/downloads.js";
+// ... existing imports ...
+
+// Corrected import paths (case-sensitive)
 import kDramasRouter from "./routes/kDramas.js";
 import cDramasRouter from "./routes/cDramas.js";
 import thaiDramasRouter from "./routes/thaiDramas.js";
 import japaneseDramasRouter from "./routes/japaneseDramas.js";
+
+// ... express setup ...
+
+// Register all routes
+app.use("/api/movies", movieRoutes);
+app.use("/api/animeMovie", animeMovieRoutes);
+app.use("/api/animeSeries", animeSeriesRoutes);
+app.use("/api/webSeries", webSeriesRoutes);
+app.use("/api/updates", updatesRouter);
+app.use("/api/requests", requestsRouter);
+app.use("/api/likes", likesRouter);  // Fixed registration
+app.use("/api/reviews", reviewsRouter);
+app.use("/api/downloads", downloadsRouter);
+app.use("/api/kDramas", kDramasRouter);
+app.use("/api/cDramas", cDramasRouter);
+app.use("/api/thaiDramas", thaiDramasRouter);
+app.use("/api/japaneseDramas", japaneseDramasRouter);
+
+// ... rest of server.js ...
 
 const app = express();
 
@@ -68,19 +90,6 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use("/api/movies", movieRoutes);
-app.use("/api/animeMovie", animeMovieRoutes);
-app.use("/api/animeSeries", animeSeriesRoutes);
-app.use("/api/webSeries", webSeriesRoutes);
-app.use("/api/updates", updatesRouter);
-app.use("/api/requests", requestsRouter);
-app.use("/api/likes", likesRouter);
-app.use("/api/reviews", reviewsRouter);
-app.use("/api/downloads", downloadsRouter);
-app.use("/api/kDramas", kDramasRouter);
-app.use("/api/cDramas", cDramasRouter);
-app.use("/api/thaiDramas", thaiDramasRouter);
-app.use("/api/japaneseDramas", japaneseDramasRouter);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

@@ -1,17 +1,20 @@
 import express from "express";
 const router = express.Router();
-import KDrama from "../models/KDrama.js";
-import CDrama from "../models/CDrama.js";
-import JapaneseDrama from "../models/JapaneseDrama.js";
-import ThaiDrama from "../models/ThaiDrama.js";
+import mongoose from "mongoose";
 
+// Correct model references
 const models = {
-  kDramas: KDrama,
-  cDramas: CDrama,
-  thaiDramas: ThaiDrama,
-  japaneseDramas: JapaneseDrama
+  movies: mongoose.model('Movie'),
+  animeMovie: mongoose.model('AnimeMovie'),
+  animeSeries: mongoose.model('AnimeSeries'),
+  webSeries: mongoose.model('WebSeries'),
+  kDramas: mongoose.model('KDrama'),
+  cDramas: mongoose.model('CDrama'),
+  thaiDramas: mongoose.model('ThaiDrama'),
+  japaneseDramas: mongoose.model('JapaneseDrama')
 };
 
+// POST update like status
 router.post('/:collection/:slug', async (req, res) => {
   const { collection, slug } = req.params;
   const { liked } = req.body;
@@ -26,10 +29,11 @@ router.post('/:collection/:slug', async (req, res) => {
       return res.status(404).json({ message: 'Media not found' });
     }
 
+    // Initialize likes if missing
     if (typeof media.likes === 'undefined') {
       media.likes = 0;
     }
-
+    
     if (liked) {
       media.likes += 1;
     } else if (media.likes > 0) {
