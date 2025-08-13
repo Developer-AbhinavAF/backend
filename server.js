@@ -61,8 +61,8 @@ app.get("/", (req, res) => {
 
 // --- MongoDB Connect ---
 mongoose
-  .connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/SkyVeil", {
-    dbName: process.env.DB_NAME || "SkyVeil",
+  .connect(process.env.MONGO_URI || "mongodb+srv://multiverseDB:W5HXJPLrbGe32Rdg@mern-cluster.zxbyya5.mongodb.net/", {
+    dbName: process.env.DB_NAME || "MultiverseDB",
   })
   .then(() => console.log("MongoDB connected ✅"))
   .catch((err) => console.error("MongoDB connection error ❌:", err));
