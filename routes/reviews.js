@@ -1,20 +1,29 @@
 import express from "express";
 const router = express.Router();
-import mongoose from "mongoose";
+import Movie from "../models/Movie.js";
+import AnimeMovie from "../models/AnimeMovie.js";
+import AnimeSeries from "../models/AnimeSeries.js";
+import WebSeries from "../models/WebSeries.js";
+import KDrama from "../models/KDrama.js";
+import CDrama from "../models/CDrama.js";
+import ThaiDrama from "../models/ThaiDrama.js";
+import JapaneseDrama from "../models/JapaneseDrama.js";
+import PakistaniDrama from "../models/PakistaniDrama.js";
 
 const models = {
-  movies: mongoose.model('Movie'),
-  animeMovie: mongoose.model('AnimeMovie'),
-  animeSeries: mongoose.model('AnimeSeries'),
-  webSeries: mongoose.model('WebSeries'),
-  kDramas: mongoose.model('KDrama'),
-  cDramas: mongoose.model('CDrama'),
-  thaiDramas: mongoose.model('ThaiDrama'),
-  japaneseDramas: mongoose.model('JapaneseDrama')
+  movies: Movie,
+  animeMovie: AnimeMovie,
+  animeSeries: AnimeSeries,
+  webSeries: WebSeries,
+  kDramas: KDrama,
+  cDramas: CDrama,
+  thaiDramas: ThaiDrama,
+  japaneseDramas: JapaneseDrama,
+  pakistaniDramas: PakistaniDrama,
 };
 
-// POST add review
-router.post('/:collection/:slug', async (req, res) => {
+// POST add review at /:collection/:slug/review
+router.post('/:collection/:slug/review', async (req, res) => {
   const { collection, slug } = req.params;
   const { userName, userEmail, rating, comment } = req.body;
 
@@ -28,17 +37,18 @@ router.post('/:collection/:slug', async (req, res) => {
       return res.status(404).json({ message: 'Media not found' });
     }
 
+    if (!Array.isArray(media.reviews)) media.reviews = [];
     media.reviews.push({
       userName,
       userEmail,
-      rating,
+      rating: Number(rating),
       comment
     });
 
     // Update average rating
-    const totalReviews = media.reviews.length;
-    const totalRating = media.reviews.reduce((sum, review) => sum + review.rating, 0);
-    media.rating = totalRating / totalReviews;
+    const totalReviews = media.reviews.length || 1;
+    const totalRating = media.reviews.reduce((sum, review) => sum + (Number(review.rating) || 0), 0);
+    media.rating = Number((totalRating / totalReviews).toFixed(1));
 
     const updatedMedia = await media.save();
     res.status(201).json(updatedMedia.reviews.slice(-1)[0]);
