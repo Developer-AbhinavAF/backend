@@ -54,9 +54,33 @@ app.use("/api", downloadsRoutes);
 app.use("/api", requestsRoutes);
 app.use("/api/updates", updatesRoutes);
 
+// --- API Index ---
+app.get("/api", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "API index",
+    endpoints: {
+      movies: "/api/movies",
+      animeMovie: "/api/animeMovie",
+      animeSeries: "/api/animeSeries",
+      webSeries: "/api/webSeries",
+      kDramas: "/api/kDramas",
+      cDramas: "/api/cDramas",
+      thaiDramas: "/api/thaiDramas",
+      japaneseDramas: "/api/japaneseDramas",
+      pakistaniDramas: "/api/pakistaniDramas",
+      likes: "/api/likes",
+      requests: "/api/requests",
+      downloads: "/api/:collection/:slug/download",
+      reviews: "/api/:collection/:slug/review",
+      updates: "/api/updates"
+    }
+  });
+});
+
 // --- Default Health Check ---
 app.get("/", (req, res) => {
-  res.json({ status: "ok", message: "Backend API is running ✅" });
+  res.json({ status: "ok", message: "Backend API is running " });
 });
 
 // --- MongoDB Connect ---
@@ -64,8 +88,8 @@ mongoose
   .connect(process.env.MONGO_URI || "mongodb+srv://multiverseDB:W5HXJPLrbGe32Rdg@mern-cluster.zxbyya5.mongodb.net/", {
     dbName: process.env.DB_NAME || "MultiverseDB",
   })
-  .then(() => console.log("MongoDB connected ✅"))
-  .catch((err) => console.error("MongoDB connection error ❌:", err));
+  .then(() => console.log("MongoDB connected "))
+  .catch((err) => console.error("MongoDB connection error :", err));
 
 // --- Server Start ---
 const PORT = process.env.PORT || 5000;
