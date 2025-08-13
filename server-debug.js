@@ -1,46 +1,58 @@
+// server-debug.js
 import express from "express";
 import mongoose from "mongoose";
-import cors from "cors";
+import morgan from "morgan";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const loadRoute = async (path, routePath) => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+app.use(express.json());
+app.use(morgan("dev"));
+
+// MongoDB connect
+const MONGO_URI = "mongodb+srv://multiverseDB:W5HXJPLrbGe32Rdg@mern-cluster.zxbyya5.mongodb.net/gameverse";
+mongoose.connect(MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch(err => console.error("❌ MongoDB connect error:", err));
+
+// Helper to load routes with debug logs
+const loadRoute = async (pathName, mountPath) => {
   try {
-    const route = await import(path);
-    console.log(`✅ Loaded route: ${routePath}`);
-    return route.default;
+    const route = (await import(pathName)).default;
+    app.use(mountPath, route);
+    console.log(`✅ Mounted: ${mountPath} from ${pathName}`);
   } catch (err) {
-    console.error(`❌ Failed to load route: ${routePath} from ${path}`, err.message);
-    return (req, res) => res.status(500).json({ error: `Route ${routePath} failed to load` });
+    console.error(`❌ Failed to load ${mountPath} from ${pathName}`, err.message);
   }
 };
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+// Wrap all route loads in an async function
+async function init() {
+  await loadRoute("./routes/cDramas.js", "/api/cDramas");
+  await loadRoute("./routes/kDramas.js", "/api/kDramas");
+  await loadRoute("./routes/japaneseDramas.js", "/api/japaneseDramas");
+  await loadRoute("./routes/thaiDramas.js", "/api/thaiDramas");
+  await loadRoute("./routes/movieRoutes.js", "/api/movies");
+  await loadRoute("./routes/animeMovieRoutes.js", "/api/animeMovie");
+  await loadRoute("./routes/animeSeriesRoutes.js", "/api/animeSeries");
+  await loadRoute("./routes/webSeriesRoutes.js", "/api/webSeries");
+  await loadRoute("./routes/likes.js", "/api/likes");
+  await loadRoute("./routes/requests.js", "/api/requests");
+  await loadRoute("./routes/downloads.js", "/api/downloads");
+  await loadRoute("./routes/reviews.js", "/api/reviews");
 
-const initRoutes = async () => {
-  app.use("/api/movies", await loadRoute("./routes/movieRoutes.js", "/api/movies"));
-  app.use("/api/animeMovie", await loadRoute("./routes/animeMovieRoutes.js", "/api/animeMovie"));
-  app.use("/api/animeSeries", await loadRoute("./routes/animeSeriesRoutes.js", "/api/animeSeries"));
-  app.use("/api/webSeries", await loadRoute("./routes/webSeriesRoutes.js", "/api/webSeries"));
-  app.use("/api/kDramas", await loadRoute("./routes/kDramas.js", "/api/kDramas"));
-  app.use("/api/cDramas", await loadRoute("./routes/cDramas.js", "/api/cDramas"));
-  app.use("/api/thaiDramas", await loadRoute("./routes/thaiDramas.js", "/api/thaiDramas"));
-  app.use("/api/japaneseDramas", await loadRoute("./routes/japaneseDramas.js", "/api/japaneseDramas"));
-  app.use("/api/likes", await loadRoute("./routes/likes.js", "/api/likes"));
-  app.use("/api/requests", await loadRoute("./routes/requests.js", "/api/requests"));
-  app.use("/api/downloads", await loadRoute("./routes/downloads.js", "/api/downloads"));
-  app.use("/api/reviews", await loadRoute("./routes/reviews.js", "/api/reviews"));
-};
+  // Route existence test
+  app.use((req, res) => {
+    console.log(`⚠️ No route matched for: ${req.method} ${req.originalUrl}`);
+    res.status(404).json({ error: "Endpoint not found" });
+  });
 
-app.get("/", (req, res) => res.json({ status: "ok" }));
+  const PORT = 5000;
+  app.listen(PORT, () => console.log(`🚀 Debug server running on port ${PORT}`));
+}
 
-mongoose.connect(
-  "mongodb+srv://multiverseDB:W5HXJPLrbGe32Rdg@mern-cluster.zxbyya5.mongodb.net/",
-  { dbName: "gameverse" }
-).then(() => console.log("MongoDB connected ✅"))
- .catch(err => console.error("MongoDB error ❌:", err));
-
-const PORT = 5000;
-initRoutes().then(() => {
-  app.listen(PORT, () => console.log(`🚀 Server listening on ${PORT}`));
-});
+// Start app
+init();

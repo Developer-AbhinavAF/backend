@@ -42,6 +42,13 @@ app.get("/", (req, res) => {
   res.json({ status: "ok", message: "Backend API is running ✅" });
 });
 
+router.get("/", async (req, res) => {
+  console.log("📥 cDramas hit hua");
+  const data = await CDrama.find();
+  res.json(data);
+});
+
+
 // --- MongoDB Connect ---
 mongoose
   .connect("mongodb+srv://multiverseDB:W5HXJPLrbGe32Rdg@mern-cluster.zxbyya5.mongodb.net/", {
