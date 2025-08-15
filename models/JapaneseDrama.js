@@ -15,29 +15,45 @@ const reviewSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 }, { _id: false });
 
+// Episode-level schema
+const episodeSchema = new mongoose.Schema({
+  episodeNumber: { type: Number, required: true },
+  title: { type: String, required: true },
+  duration: String,
+  downloadQualities: {
+    "480p": { type: qualitySchema, default: undefined },
+    "720p": { type: qualitySchema, default: undefined },
+    "1080p": { type: qualitySchema, default: undefined }
+  },
+  streamQualities: {
+    "480p": { type: qualitySchema, default: undefined },
+    "720p": { type: qualitySchema, default: undefined },
+    "1080p": { type: qualitySchema, default: undefined }
+  }
+}, { _id: false });
+
+// Season schema
+const seasonSchema = new mongoose.Schema({
+  seasonNumber: { type: Number, required: true },
+  episodes: { type: [episodeSchema], default: [] }
+}, { _id: false });
+
 const japaneseDramaSchema = new mongoose.Schema({
   title: { type: String, required: true },
   slug: { type: String, required: true, unique: true },
+  type: { type: String, default: "japaneseDramas" },
   description: String,
   thumbnail: String,
   poster: String,
-  rating: Number,
+  rating: { type: Number, default: null },
   tags: [String],
   releaseDate: Date,
-  duration: String,
-  language: String,
-  director: String,
+  status: { type: String, enum: ["Ongoing", "Completed", "Hiatus", "Upcoming"], default: "Ongoing" },
+  totalEpisodes: { type: Number, default: 0 },
   studio: String,
-  genres: [String],
-  cast: [String],
-  qualities: {
-    "480p": qualitySchema,
-    "720p": qualitySchema,
-    "1080p": qualitySchema
-  },
+  seasons: { type: [seasonSchema], default: [] },
   reviews: [reviewSchema],
-  downloadCount: { type: Number, default: 0 },
-  type: { type: String, default: "japaneseDramas" }
+  downloadCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 export default mongoose.model("JapaneseDrama", japaneseDramaSchema);
