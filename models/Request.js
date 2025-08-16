@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 const requestSchema = new mongoose.Schema({
   name: String,
   email: String,
-  requestType: { 
+  // Accept any request type (e.g., movies, animeMovie, feature, suggestion, etc.)
+  requestType: {
     type: String,
-    enum: ['content', 'feature', 'suggestion'],
     default: 'content'
   },
   message: String,

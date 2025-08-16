@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const qualitySchema = new mongoose.Schema({
   downloadUrl: String,
   fileSize: String,
-  englishUrl: String,
   hindiUrl: String
 }, { _id: false });
 
@@ -53,7 +52,8 @@ const japaneseDramaSchema = new mongoose.Schema({
   studio: String,
   seasons: { type: [seasonSchema], default: [] },
   reviews: [reviewSchema],
-  downloadCount: { type: Number, default: 0 }
+  downloadCount: { type: Number, default: 0 },
+  likeCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 export default mongoose.model("JapaneseDrama", japaneseDramaSchema);

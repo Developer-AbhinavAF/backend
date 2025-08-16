@@ -37,6 +37,7 @@ const thaiDramaSchema = new mongoose.Schema({
   },
   reviews: [reviewSchema],
   downloadCount: { type: Number, default: 0 },
+  likeCount: { type: Number, default: 0 },
   type: { type: String, default: "thaiDramas" }
 }, { timestamps: true });
 

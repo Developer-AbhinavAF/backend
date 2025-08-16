@@ -30,13 +30,15 @@ const movieSchema = new mongoose.Schema({
   studio: String,
   genres: [String],
   cast: [String],
+  type: { type: String, default: "movies" },
   qualities: {
     "480p": qualitySchema,
     "720p": qualitySchema,
     "1080p": qualitySchema
   },
   reviews: [reviewSchema],
-  downloadCount: { type: Number, default: 0 }
+  downloadCount: { type: Number, default: 0 },
+  likeCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 export default mongoose.model("Movie", movieSchema);
